@@ -44,13 +44,34 @@ export default class SignInScreen extends React.Component {
     return (
       <View style={styles.container}>
         <TextInput
-          style={{height: 40, width: 200, color: 'black', backgroundColor: 'white'}}
+          style={
+            {
+              height: 40, 
+              width: 200, 
+              color: 'black', 
+              backgroundColor: 'white',
+              marginBottom: 2,
+              marginLeft: 2,
+              marginRight: 2,
+            
+            }
+          }
           placeholder="Username"
           onChangeText={(username) => this.setState({username})}
         />
         <TextInput
           secureTextEntry={true}
-          style={{height: 40, width: 200, color: 'black', backgroundColor: 'white'}}
+          style={
+            {
+              height: 40,
+               width: 200, 
+               color: 'black', 
+               backgroundColor: 'white', 
+               marginTop: 2,
+               marginLeft: 2,
+               marginRight: 2,
+              }
+            }
           placeholder="Password"
           onChangeText={(password) => this.setState({password})}
         />
