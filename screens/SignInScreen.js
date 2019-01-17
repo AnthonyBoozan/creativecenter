@@ -50,7 +50,7 @@ export default class SignInScreen extends React.Component {
         />
         <TextInput
           secureTextEntry={true}
-          style={{height: 40, width: 200, color: 'black'}}
+          style={{height: 40, width: 200, color: 'black', backgroundColor: 'white'}}
           placeholder="Password"
           onChangeText={(password) => this.setState({password})}
         />
