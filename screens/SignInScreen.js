@@ -50,7 +50,7 @@ export default class SignInScreen extends React.Component {
         />
         <TextInput
           secureTextEntry={true}
-          style={{height: 40, width: 200}}
+          style={{height: 40, width: 200, color: 'black'}}
           placeholder="Password"
           onChangeText={(password) => this.setState({password})}
         />
@@ -67,5 +67,6 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: '#ed1c24',
   },
 });
