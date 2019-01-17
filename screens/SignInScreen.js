@@ -46,13 +46,13 @@ export default class SignInScreen extends React.Component {
         <TextInput
           style={
             {
-              color: 'black',
               height: 40, 
               width: 200, 
               backgroundColor: 'white',
               marginBottom: 10,
               paddingLeft: 10,
               paddingRight: 10,
+              borderRadius: 5,
             
             }
           }
@@ -63,12 +63,12 @@ export default class SignInScreen extends React.Component {
           secureTextEntry={true}
           style={
             {
-              color: 'black',
               height: 40,
               width: 200,  
               backgroundColor: 'white',
               paddingLeft: 10,
               paddingRight: 10,
+              borderRadius: 5,
               }
             }
           placeholder="Password"
