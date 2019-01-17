@@ -44,7 +44,7 @@ export default class SignInScreen extends React.Component {
     return (
       <View style={styles.container}>
         <TextInput
-          style={{height: 40, width: 200}}
+          style={{height: 40, width: 200, color: 'black'}}
           placeholder="Username"
           onChangeText={(username) => this.setState({username})}
         />
