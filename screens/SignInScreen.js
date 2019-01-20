@@ -74,11 +74,12 @@ export default class SignInScreen extends React.Component {
           placeholder="Password"
           onChangeText={(password) => this.setState({password})}
         />
-        <Button title="Sign in!" onPress={this._signInAsync} />
+       
+       
+        <Button title="Login" color='white' onPress={this._signInAsync}/>
       </View>
     );
   }
-
 
 }
 
@@ -89,4 +90,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: '#ed1c24',
   },
+  
+  Button: {
+    height: 40,
+    width: 60,
+    backgroundColor: 'blue',
+  }
 });
