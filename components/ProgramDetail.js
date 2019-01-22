@@ -8,7 +8,7 @@ _onProgramPress(){
 }
 
 render() {
-  return( 
+  return(
       <View style={styles.viewstyle}>
           <Text>{this.props.program.name}</Text>
           <Text>{this.props.program.start_time}</Text>
@@ -22,7 +22,8 @@ const styles = StyleSheet.create({
   viewstyle: {
     flex: 1,
     backgroundColor: 'white',
-    borderBottomWidth: 1
+    borderBottomWidth: 1,
+    paddingBottom: 20
   }
 });
 

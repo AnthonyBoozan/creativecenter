@@ -54,7 +54,7 @@ export default class SignInScreen extends React.Component {
           placeholder="Password"
           onChangeText={(password) => this.setState({password})}
         />
-        <Button title="Sign in!" onPress={this._signInAsync} />
+        <Button title="Login" onPress={this._signInAsync} />
       </View>
     );
   }
