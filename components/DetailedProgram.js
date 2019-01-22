@@ -3,6 +3,11 @@ import { View, Text, StyleSheet, TouchableWithoutFeedback, Button } from 'react-
 
 
 class DetailedProgram extends Component {
+
+  buttonPressAction = async () => {
+
+  }
+
   render() {
     if(!this.props.show){
       return null;
@@ -12,7 +17,7 @@ class DetailedProgram extends Component {
           <View style={{position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, justifyContent: 'center', alignItems: 'center'}} pointerEvents='box-none'>
             <View style={styles.textbox}>
               <Text>"JIFODIDFIJO"</Text>
-              <Button title="Test"/>
+              <Button onPress={this.buttonPressAction} title="Test"/>
             </View>
           </View>
         );

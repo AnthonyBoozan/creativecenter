@@ -25,12 +25,12 @@ HomeStack.navigationOptions = {
   ),
 };
 
-const LinksStack = createStackNavigator({
-  Links: LinksScreen,
+const ProgramsStack = createStackNavigator({
+  Programs: LinksScreen,
 });
 
-LinksStack.navigationOptions = {
-  tabBarLabel: 'Links',
+ProgramsStack.navigationOptions = {
+  tabBarLabel: 'My Programs',
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
       focused={focused}
@@ -55,6 +55,6 @@ SettingsStack.navigationOptions = {
 
 export default createBottomTabNavigator({
   HomeStack,
-  LinksStack,
+  ProgramsStack,
   SettingsStack,
 });
