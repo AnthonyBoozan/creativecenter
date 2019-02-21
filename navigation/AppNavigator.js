@@ -4,6 +4,7 @@ import { createSwitchNavigator } from 'react-navigation';
 import MainTabNavigator from './MainTabNavigator';
 import SignInScreen from '../screens/SignInScreen';
 import AuthLoadingScreen from '../screens/AuthLoadingScreen';
+import UserRegistrationScreen from '../screens/UserRegistrationScreen';
 
 export default createSwitchNavigator({
   // You could add another route here for authentication.
@@ -11,6 +12,7 @@ export default createSwitchNavigator({
   Auth: SignInScreen,
   Main: MainTabNavigator,
   AuthLoading: AuthLoadingScreen,
+  UserRegistration: UserRegistrationScreen,
 }, {
   initialRouteName: 'AuthLoading',
 });
