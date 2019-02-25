@@ -11,7 +11,9 @@ import {
 } from 'react-native';
 import { createStackNavigator, createSwitchNavigator, createAppContainer } from 'react-navigation';
 import { Base64 } from 'js-base64';
-const axios = require('axios')
+const axios = require('axios');
+var CryptoJs = require('crypto-js');
+
 
 export default class SignInScreen extends React.Component {
   constructor(props){
@@ -30,10 +32,11 @@ export default class SignInScreen extends React.Component {
   }
   _signInAsync = async () => {
     var signInUsername = this.state.username;
-    var signInPassword = Base64.encode(this.state.password);
+    var signInPassword = this.state.password;
+    console.log(CryptoJs.HmacSHA1(signInPassword, 'hop390n372oi').toString())
     axios.post('http://ec2-54-218-225-131.us-west-2.compute.amazonaws.com:3000/api/authenticate', {
       username: signInUsername,
-      password: signInPassword
+      password: CryptoJs.HmacSHA1(signInPassword, 'hop390n372oi').toString(),
     }).then(response => {
       if(response.status == 200){
         AsyncStorage.setItem('userToken', signInPassword);

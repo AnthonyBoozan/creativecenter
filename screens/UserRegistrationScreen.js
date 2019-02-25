@@ -3,6 +3,7 @@ import { View, StyleSheet, Text, TextInput, Button, Alert } from 'react-native';
 import { createStackNavigator, createSwitchNavigator, createAppContainer } from 'react-navigation';
 import { Base64 } from 'js-base64';
 const axios = require('axios');
+var CryptoJs = require('crypto-js');
 
 export default class UserRegistrationScreen extends React.Component {
   constructor(props){
@@ -37,7 +38,7 @@ export default class UserRegistrationScreen extends React.Component {
       if(this.state.passwordone == this.state.passwordtwo && this.state.passwordone != '' && this.firstname != '' && this.lastname != '' && this.username != ''){
         axios.post('http://ec2-54-218-225-131.us-west-2.compute.amazonaws.com:3000/api/register', {
           username: this.state.username,
-          password: this.state.passwordone,
+          password: CryptoJs.HmacSHA1(this.state.passwordone, 'hop390n372oi').toString(),
           email: this.state.email,
           firstname: this.state.firstname,
           lastname: this.state.lastname,
