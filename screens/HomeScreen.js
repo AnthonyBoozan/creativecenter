@@ -10,7 +10,9 @@ import {
   StatusBar,
   NativeModules,
   TouchableWithoutFeedback,
-  Fragment
+  Fragment,
+  FlatList,
+  RefreshControl
 } from 'react-native';
 import { WebBrowser } from 'expo';
 import { MonoText } from '../components/StyledText';
@@ -19,62 +21,74 @@ import DetailedProgram from '../components/DetailedProgram';
 const { StatusBarManager } = NativeModules;
 
 export default class HomeScreen extends React.Component {
-  state = { programs: [], viewOverlay: false, opacity: 1.0, highlightOpacity: .2};
+  constructor(props) {
+    super(props);
+    this.state = {
+      refreshing: false,
+      viewOverlay: false,
+      programs: [],
+      opacity: 1.0,
+      highlightOpacity: .2
+    };
+  }
   static navigationOptions = {
     header: null,
   };
 
   componentWillMount() {
     this.setState({programs: [{"name": "Finger Painting",
-     "start_time": "14:20",
-   "end_time": "16:20"},
+     "time_start": "14:20",
+   "time_end": "16:20"},
    {"name": "Paper Airplane mfaker",
-    "start_time": "2:20",
-  "end_time": "15:20"},
+    "time_start": "2:20",
+  "time_end": "15:20"},
   {"name": "Paper Airplane makder",
-   "start_time": "2:20",
- "end_time": "15:20"},
+   "time_start": "2:20",
+ "time_end": "15:20"},
  {"name": "Paper Airplan3e maker",
-  "start_time": "2:20",
-"end_time": "15:20"},
+  "time_start": "2:20",
+"time_end": "15:20"},
 {"name": "Paper Airplanfe maker",
- "start_time": "2:20",
-"end_time": "15:20"},
+ "time_start": "2:20",
+"time_end": "15:20"},
 {"name": "Paper Airplane 3maker",
- "start_time": "2:20",
-"end_time": "15:20"},
+ "time_start": "2:20",
+"time_end": "15:20"},
 {"name": "Paper Airplanf3e maker",
- "start_time": "2:20",
-"end_time": "15:20"},
+ "time_start": "2:20",
+"time_end": "15:20"},
 {"name": "Paper Airplane2 maker",
- "start_time": "2:20",
-"end_time": "15:20"},
+ "time_start": "2:20",
+"time_end": "15:20"},
 {"name": "Paper Airplane ma1ker",
- "start_time": "2:20",
-"end_time": "15:20"},
+ "time_start": "2:20",
+"time_end": "15:20"},
 {"name": "Paper Airplane 5maker",
- "start_time": "2:20",
-"end_time": "15:20"},
+ "time_start": "2:20",
+"time_end": "15:20"},
 {"name": "Paper Airplane mak6er",
- "start_time": "2:20",
-"end_time": "15:20"},
+ "time_start": "2:20",
+"time_end": "15:20"},
 {"name": "Paper Airplane 2maker",
- "start_time": "2:20",
-"end_time": "15:20"},
+ "time_start": "2:20",
+"time_end": "15:20"},
 {"name": "Paper A5irplane maker",
- "start_time": "2:20",
-"end_time": "15:20"}
+ "time_start": "2:20",
+"time_end": "15:20"}
 
 
     ]});
   }
 
-  renderPrograms(){
-    return this.state.programs.map(program =>
-      <TouchableOpacity key={program.name} onPress={this._handleProgramPress} activeOpacity={this.state.highlightOpacity}>
-        <ProgramDetail key={program.name} program={program} />
-      </TouchableOpacity>
-    );
+  async refresh() {
+    console.log("refresh");
+  }
+
+  _onRefresh = () => {
+    this.setState({refreshing: true});
+    this.refresh().then(() => {
+      this.setState({refreshing: false});
+    });
   }
 
   render() {
@@ -82,9 +96,20 @@ export default class HomeScreen extends React.Component {
       <React.Fragment>
       <TouchableWithoutFeedback onPress={() => this._handleExitOverlay()}>
         <View style={[styles.container, {opacity: this.state.opacity}]}>
-          <ScrollView style={styles.contentContainer} contentContainerStyle={styles.contentContainer}>
-            {this.renderPrograms()}
-          </ScrollView>
+          <FlatList
+          data={this.state.programs}
+          renderItem={({item}) =>
+          <TouchableOpacity key={item.name} onPress={this._handleProgramPress} activeOpacity={this.state.highlightOpacity}>
+            <ProgramDetail key={item.name} program={item} />
+          </TouchableOpacity>}
+          refreshControl={
+          <RefreshControl
+            refreshing={this.state.refreshing}
+            onRefresh={this._onRefresh}
+          />}
+          keyExtractor={(item, index) => index.toString()}
+          style={styles.contentContainer}
+        />
         </View>
       </TouchableWithoutFeedback>
       <DetailedProgram show={this.state.viewOverlay} _handleProgramPress={this._handleProgramPress}/>
@@ -128,12 +153,13 @@ export default class HomeScreen extends React.Component {
 
 const styles = StyleSheet.create({
   container: {
+    paddingTop: 22,
     flex: 1,
     backgroundColor: '#B2B2B2',
 
   },
   contentContainer: {
-    paddingTop: 12,
-    paddingBottom: 11
+
+
   },
 });

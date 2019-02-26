@@ -11,8 +11,8 @@ render() {
   return(
       <View style={styles.viewstyle}>
           <Text>{this.props.program.name}</Text>
-          <Text>{this.props.program.start_time}</Text>
-          <Text>{this.props.program.end_time}</Text>
+          <Text>{this.props.program.time_start}</Text>
+          <Text>{this.props.program.time_end}</Text>
       </View>
   );
 }

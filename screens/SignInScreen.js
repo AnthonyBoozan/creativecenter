@@ -39,7 +39,8 @@ export default class SignInScreen extends React.Component {
       password: CryptoJs.HmacSHA1(signInPassword, 'hop390n372oi').toString(),
     }).then(response => {
       if(response.status == 200){
-        AsyncStorage.setItem('userToken', signInPassword);
+        AsyncStorage.setItem('username', signInUsername);
+        AsyncStorage.setItem('token', CryptoJs.HmacSHA1(signInPassword, 'hop390n372oi').toString())
         this.props.navigation.navigate('Main');
       }
 
