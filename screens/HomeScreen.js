@@ -12,13 +12,15 @@ import {
   TouchableWithoutFeedback,
   Fragment,
   FlatList,
-  RefreshControl
+  RefreshControl,
+  AsyncStorage
 } from 'react-native';
 import { WebBrowser } from 'expo';
 import { MonoText } from '../components/StyledText';
 import ProgramDetail from '../components/ProgramDetail';
 import DetailedProgram from '../components/DetailedProgram';
 const { StatusBarManager } = NativeModules;
+const axios = require('axios');
 
 export default class HomeScreen extends React.Component {
   constructor(props) {
@@ -28,60 +30,112 @@ export default class HomeScreen extends React.Component {
       viewOverlay: false,
       programs: [],
       opacity: 1.0,
-      highlightOpacity: .2
+      highlightOpacity: .2,
+      highlightedClass: {item: {}}
     };
   }
   static navigationOptions = {
     header: null,
   };
 
-  componentWillMount() {
-    this.setState({programs: [{"name": "Finger Painting",
-     "time_start": "14:20",
-   "time_end": "16:20"},
-   {"name": "Paper Airplane mfaker",
-    "time_start": "2:20",
-  "time_end": "15:20"},
-  {"name": "Paper Airplane makder",
-   "time_start": "2:20",
- "time_end": "15:20"},
- {"name": "Paper Airplan3e maker",
-  "time_start": "2:20",
-"time_end": "15:20"},
-{"name": "Paper Airplanfe maker",
- "time_start": "2:20",
-"time_end": "15:20"},
-{"name": "Paper Airplane 3maker",
- "time_start": "2:20",
-"time_end": "15:20"},
-{"name": "Paper Airplanf3e maker",
- "time_start": "2:20",
-"time_end": "15:20"},
-{"name": "Paper Airplane2 maker",
- "time_start": "2:20",
-"time_end": "15:20"},
-{"name": "Paper Airplane ma1ker",
- "time_start": "2:20",
-"time_end": "15:20"},
-{"name": "Paper Airplane 5maker",
- "time_start": "2:20",
-"time_end": "15:20"},
-{"name": "Paper Airplane mak6er",
- "time_start": "2:20",
-"time_end": "15:20"},
-{"name": "Paper Airplane 2maker",
- "time_start": "2:20",
-"time_end": "15:20"},
-{"name": "Paper A5irplane maker",
- "time_start": "2:20",
-"time_end": "15:20"}
+  componentDidMount() {
+    this.refreshEligibleClasses();
+    this.refreshAllClasses();
+    this.getClassLevels();
+    this.getTeachersClasses();
+  }
 
+  async refreshAllClasses() {
+    username = await AsyncStorage.getItem('username');
+    token = await AsyncStorage.getItem('token');
+    axios.post('http://ec2-54-218-225-131.us-west-2.compute.amazonaws.com:3000/api/getallclasses', {
+      username: username,
+      password: token,
+    }).then(response => {
+      if(response.status == 200){
+        this.setState({
+          programs: response.data[1]
+        })
+      }
+    })
+    .catch(function (error) {
+      console.log(error);
+    })
+  }
 
-    ]});
+  async refreshEligibleClasses() {
+    username = await AsyncStorage.getItem('username');
+    token = await AsyncStorage.getItem('token');
+    axios.post('http://ec2-54-218-225-131.us-west-2.compute.amazonaws.com:3000/api/eligibleclasses', {
+      username: username,
+      password: token,
+    }).then(response => {
+      if(response.status == 200){
+        temp_eligible_classes = {};
+        (response.data[1]).map(function(x) {
+          if(temp_eligible_classes[x.class_id] == null){
+            temp_eligible_classes[x.class_id]=[x.level_id];
+          }
+          else{
+            (temp_eligible_classes[x.class_id]).push(x.level_id);
+          }
+        });
+        AsyncStorage.setItem('eligible_classes', JSON.stringify(temp_eligible_classes));
+      }
+    })
+    .catch(function (error) {
+      console.log(error);
+    })
+  }
+
+  async getClassLevels() {
+    username = await AsyncStorage.getItem('username');
+    token = await AsyncStorage.getItem('token');
+    axios.post('http://ec2-54-218-225-131.us-west-2.compute.amazonaws.com:3000/api/classlevels', {
+      username: username,
+      password: token,
+    }).then(response => {
+      if(response.status == 200){
+        levels = {};
+        (response.data[1]).map(function(x) {
+          levels[x.id]=x.name;
+        });
+        console.log(levels);
+        AsyncStorage.setItem('levels', JSON.stringify(levels));
+      }
+    })
+    .catch(function (error) {
+      console.log(error);
+    })
+  }
+
+  async getTeachersClasses() {
+    username = await AsyncStorage.getItem('username');
+    token = await AsyncStorage.getItem('token');
+    axios.post('http://ec2-54-218-225-131.us-west-2.compute.amazonaws.com:3000/api/retrieveusersclasses', {
+      username: username,
+      password: token,
+    }).then(response => {
+      if(response.status == 200){
+        AsyncStorage.setItem('teachers_classes', JSON.stringify(response.data[1]));
+      }
+    })
+    .catch(function (error) {
+      console.log(error);
+      Alert.alert(
+        'Could not get you classes, please reload the app',
+        '',
+        [
+          {text: 'OK', onPress: () => console.log('OK Pressed')},
+        ],
+        { cancelable: false }
+      )
+    })
   }
 
   async refresh() {
-    console.log("refresh");
+    this.refreshEligibleClasses();
+    this.refreshAllClasses();
   }
 
   _onRefresh = () => {
@@ -99,8 +153,8 @@ export default class HomeScreen extends React.Component {
           <FlatList
           data={this.state.programs}
           renderItem={({item}) =>
-          <TouchableOpacity key={item.name} onPress={this._handleProgramPress} activeOpacity={this.state.highlightOpacity}>
-            <ProgramDetail key={item.name} program={item} />
+          <TouchableOpacity key={item.class_id} onPress={() => this._handleProgramPress(item)} activeOpacity={this.state.highlightOpacity}>
+            <ProgramDetail program={item} />
           </TouchableOpacity>}
           refreshControl={
           <RefreshControl
@@ -112,18 +166,36 @@ export default class HomeScreen extends React.Component {
         />
         </View>
       </TouchableWithoutFeedback>
-      <DetailedProgram show={this.state.viewOverlay} _handleProgramPress={this._handleProgramPress}/>
+      <DetailedProgram show={this.state.viewOverlay} _handleProgramPress={this._handleDetailedProgramPress} program={this.state.highlightedClass}/>
 
       </React.Fragment>
     );
   }
 
-  _handleProgramPress = () => {
+  _handleProgramPress = (item) => {
     if(this.state.viewOverlay){
       this.setState({
         viewOverlay: false,
         opacity: 1.0,
-        highlightOpacity: .2
+        highlightOpacity: .2,
+        })
+    }
+    else{
+      this.setState({
+        viewOverlay: !this.state.viewOverlay,
+        opacity: .4,
+        highlightOpacity: 1,
+        highlightedClass: {item}
+      })
+    }
+  };
+
+  _handleDetailedProgramPress = () => {
+    if(this.state.viewOverlay){
+      this.setState({
+        viewOverlay: false,
+        opacity: 1.0,
+        highlightOpacity: .2,
         })
     }
     else{
@@ -133,8 +205,6 @@ export default class HomeScreen extends React.Component {
         highlightOpacity: 1
       })
     }
-
-    console.log(this.state.opacity);
   };
 
   _handleExitOverlay = () => {
@@ -145,10 +215,7 @@ export default class HomeScreen extends React.Component {
           highlightOpacity: .4
         })
       }
-      console.log(this.state.opacity);
     };
-
-
 }
 
 const styles = StyleSheet.create({
