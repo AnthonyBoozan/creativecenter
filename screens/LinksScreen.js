@@ -19,12 +19,14 @@ import {
 import { WebBrowser } from 'expo';
 import { MonoText } from '../components/StyledText';
 import ProgramDetail from '../components/ProgramDetail';
-import DetailedProgram from '../components/DetailedProgram';
+import DetailedProgramMyPrograms from '../components/DetailedProgramMyPrograms';
+import HomeScreen from '../screens/HomeScreen';
 const { StatusBarManager } = NativeModules;
+import { withNavigationFocus } from 'react-navigation';
 const axios = require('axios');
 var CryptoJs = require('crypto-js');
 
-export default class LinksScreen extends React.Component {
+class LinksScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -44,10 +46,18 @@ export default class LinksScreen extends React.Component {
 
   }
 
+  componentDidUpdate(prevProps) {
+    if(prevProps.isFocused !== this.props.isFocused){
+      this.refreshTeachersClasses();
+    }
+  }
+  viewHandlerLink() {
+
+  }
+
   async initialSetup(){
     progs = await AsyncStorage.getItem('teachers_classes');
     this.setState({programs: JSON.parse(progs)});
-    console.log(this.state.highlightedClass);
   }
 
   async refreshTeachersClasses() {
@@ -111,7 +121,7 @@ export default class LinksScreen extends React.Component {
           </View>
         </TouchableWithoutFeedback>
         <React.Fragment key={this.state.highlightedClass}>
-          <DetailedProgram show={this.state.viewOverlay} _handleProgramPress={this._handleDetailedProgramPress} program={this.state.highlightedClass}/>
+          <DetailedProgramMyPrograms show={this.state.viewOverlay} _handleProgramPress={this._handleDetailedProgramPress} program={this.state.highlightedClass} handler = {this.viewHandlerLink}/>
         </React.Fragment>
       </React.Fragment>
     );
@@ -162,6 +172,8 @@ export default class LinksScreen extends React.Component {
       }
     };
 }
+
+export default withNavigationFocus(LinksScreen);
 
 const styles = StyleSheet.create({
   container: {

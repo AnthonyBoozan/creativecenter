@@ -1,43 +1,18 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet, TouchableWithoutFeedback, Button, Picker, AsyncStorage } from 'react-native';
 var equal = require('fast-deep-equal');
-const axios = require('axios');
 
 
-class DetailedProgram extends Component {
+class DetailedProgramMyPrograms extends Component {
   constructor(props){
     super(props);
-    this.state = {chosenlevel: '',
+    this.state = {language: '',
                   program: {},
-                  valid_levels: [],};
+                  valid_levels: []};
   }
-
   buttonPressAction = async () => {
-    username = await AsyncStorage.getItem('username');
-    token = await AsyncStorage.getItem('token');
-    levels = JSON.parse(await AsyncStorage.getItem('levels'));
-    chosenlevel = 0;
-    class_id = this.state.program.class_id;
-    for(i in levels){
-      if(levels[i] == this.state.chosenlevel){
-        chosenlevel = i;
-      }
-    }
-    axios.post('http://ec2-54-218-225-131.us-west-2.compute.amazonaws.com:3000/api/signup', {
-      username: username,
-      password: token,
-      level: chosenlevel,
-      class_id: class_id
-    }).then(response => {
-      if(response.status == 200){
-        this.props.handler();
-      }
-
-    }).catch(function (error) {
-      console.log(error);
-    })
+    this.props.handler();
   }
-
   componentDidMount(){
     this.getValidLevels();
   }
@@ -49,6 +24,7 @@ class DetailedProgram extends Component {
     if(prevProps.program.item !== this.props.program.item){
       this.getValidLevels();
     }
+
   }
   async getValidLevels(){
     temp_levels = {}
@@ -59,6 +35,7 @@ class DetailedProgram extends Component {
         if(x < 100){
 
           for (var level in levels){
+            console.log(level);
             if(level <= x && !temp_levels.hasOwnProperty(levels[level])){
               temp_levels[levels[level]] = level;
             }
@@ -75,22 +52,17 @@ class DetailedProgram extends Component {
 
     }
     keysSorted = Object.keys(temp_levels).sort(function(a,b){return temp_levels[b]-temp_levels[a]})
+    console.log(keysSorted);
     this.setState({program: this.props.program.item,
-                    valid_levels: keysSorted,
-                    chosenlevel: keysSorted[0]});
+                    valid_levels: keysSorted});
+
+
   }
 
   cleanseLabelString(level) {
     level = level.replace(/[_-]/g, " ");
     level = level.charAt(0).toUpperCase() + level.slice(1);
     return level
-  }
-
-  pickerItemRender(){
-    return this.state.valid_levels.map(level =>
-      <Picker.Item key={level} label={this.cleanseLabelString(level)} value={level} />
-
-    )
   }
 
   render() {
@@ -104,14 +76,6 @@ class DetailedProgram extends Component {
               <Text>{this.props.program.item.name}</Text>
               <Text>{this.props.program.item.description}</Text>
               <Button onPress={this.buttonPressAction} title="Test"/>
-              <Picker
-                selectedValue={this.state.chosenlevel}
-                style={{height: 50, width: 100}}
-                onValueChange={(itemValue, itemIndex) =>
-                  this.setState({chosenlevel: itemValue,}
-                  )}>
-                {this.pickerItemRender()}
-              </Picker>
             </View>
           </View>
         );
@@ -130,4 +94,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default DetailedProgram;
+export default DetailedProgramMyPrograms;

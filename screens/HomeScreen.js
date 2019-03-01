@@ -19,10 +19,13 @@ import { WebBrowser } from 'expo';
 import { MonoText } from '../components/StyledText';
 import ProgramDetail from '../components/ProgramDetail';
 import DetailedProgram from '../components/DetailedProgram';
+import { withNavigationFocus } from 'react-navigation';
 const { StatusBarManager } = NativeModules;
 const axios = require('axios');
 
-export default class HomeScreen extends React.Component {
+
+
+class HomeScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -31,8 +34,9 @@ export default class HomeScreen extends React.Component {
       programs: [],
       opacity: 1.0,
       highlightOpacity: .2,
-      highlightedClass: {item: {}}
+      highlightedClass: {item: {},}
     };
+    this.viewHandlerHome = this.viewHandlerHome.bind(this);
   }
   static navigationOptions = {
     header: null,
@@ -43,6 +47,25 @@ export default class HomeScreen extends React.Component {
     this.refreshAllClasses();
     this.getClassLevels();
     this.getTeachersClasses();
+  }
+
+  componentDidUpdate(prevProps) {
+    if(prevProps.isFocused !== this.props.isFocused){
+      this.refreshAllClasses();
+    }
+  }
+
+  viewHandlerHome() {
+    this.setState({
+      viewOverlay: false,
+      opacity: 1.0,
+      highlightOpacity: .2,
+    })
+    this.refreshEligibleClasses();
+    this.refreshAllClasses();
+    this.getTeachersClasses();
+    console.log(this.props.isFocused);
+    return this.state.viewOverlay;
   }
 
   async refreshAllClasses() {
@@ -166,7 +189,7 @@ export default class HomeScreen extends React.Component {
         />
         </View>
       </TouchableWithoutFeedback>
-      <DetailedProgram show={this.state.viewOverlay} _handleProgramPress={this._handleDetailedProgramPress} program={this.state.highlightedClass}/>
+      <DetailedProgram show={this.state.viewOverlay} _handleProgramPress={this._handleDetailedProgramPress} program={this.state.highlightedClass} handler = {this.viewHandlerHome}/>
 
       </React.Fragment>
     );
@@ -217,6 +240,7 @@ export default class HomeScreen extends React.Component {
       }
     };
 }
+export default withNavigationFocus(HomeScreen);
 
 const styles = StyleSheet.create({
   container: {

@@ -2,6 +2,7 @@ import React from 'react';
 import { Platform, StatusBar, StyleSheet, View } from 'react-native';
 import { AppLoading, Asset, Font, Icon } from 'expo';
 import AppNavigator from './navigation/AppNavigator';
+import { updateFocus } from 'react-navigation-is-focused-hoc'
 
 export default class App extends React.Component {
   state = {
@@ -21,7 +22,11 @@ export default class App extends React.Component {
       return (
         <View style={styles.container}>
           {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
-          <AppNavigator />
+          <AppNavigator
+            onNavigationStateChange={(prevState, currentState) => {
+              updateFocus(currentState)
+            }}
+          />
         </View>
       );
     }
@@ -30,7 +35,7 @@ export default class App extends React.Component {
   _loadResourcesAsync = async () => {
     return Promise.all([
       Asset.loadAsync([
-      
+
       ]),
       Font.loadAsync({
         // This is the font that we are using for our tab bar
