@@ -34,7 +34,13 @@ class HomeScreen extends React.Component {
       programs: [],
       opacity: 1.0,
       highlightOpacity: .2,
-      highlightedClass: {item: {},}
+      highlightedClass: {item: {},
+      filterOptions: {
+        name: '',
+        time_start: 0,
+        time_end: 0,
+        level: 0,
+      }}
     };
     this.viewHandlerHome = this.viewHandlerHome.bind(this);
   }
@@ -49,9 +55,12 @@ class HomeScreen extends React.Component {
     this.getTeachersClasses();
   }
 
+
+
   componentDidUpdate(prevProps) {
     if(prevProps.isFocused !== this.props.isFocused){
       this.refreshAllClasses();
+
     }
   }
 
@@ -64,7 +73,6 @@ class HomeScreen extends React.Component {
     this.refreshEligibleClasses();
     this.refreshAllClasses();
     this.getTeachersClasses();
-    console.log(this.props.isFocused);
     return this.state.viewOverlay;
   }
 
@@ -75,7 +83,7 @@ class HomeScreen extends React.Component {
       username: username,
       password: token,
     }).then(response => {
-      if(response.status == 200){
+      if(response.status == 200 && response.data[1] !== undefined){
         this.setState({
           programs: response.data[1]
         })

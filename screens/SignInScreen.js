@@ -29,6 +29,7 @@ export default class SignInScreen extends React.Component {
 
   _userRegistration = async () => {
     this.props.navigation.navigate('UserRegistration');
+
   }
   _signInAsync = async () => {
     var signInUsername = this.state.username;

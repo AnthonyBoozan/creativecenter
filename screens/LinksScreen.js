@@ -34,7 +34,9 @@ class LinksScreen extends React.Component {
       programs: [],
       highlightedClass: {item: {}}
     };
+    this.viewHandlerLink = this.viewHandlerLink.bind(this);
   }
+
 
   static navigationOptions = {
     header: null,
@@ -43,7 +45,6 @@ class LinksScreen extends React.Component {
 
   componentDidMount() {
     this.initialSetup();
-
   }
 
   componentDidUpdate(prevProps) {
@@ -51,8 +52,15 @@ class LinksScreen extends React.Component {
       this.refreshTeachersClasses();
     }
   }
-  viewHandlerLink() {
 
+  viewHandlerLink() {
+    this.setState({
+      viewOverlay: false,
+      opacity: 1.0,
+      highlightOpacity: .2,
+    })
+    this.refreshTeachersClasses();
+    return this.state.viewOverlay;
   }
 
   async initialSetup(){
@@ -68,16 +76,17 @@ class LinksScreen extends React.Component {
       password: token,
     }).then(response => {
       if(response.status == 200){
-        console.log()
+        console.log('Tester')
         this.setState({
           programs: response.data[1]
         })
+        AsyncStorage.setItem('teachers_classes', JSON.stringify(response.data[1]));
       }
     })
     .catch(function (error) {
       console.log(error);
       Alert.alert(
-        'Could not get you classes, please reload the app',
+        'Could not get your classes, please reload the app',
         '',
         [
           {text: 'OK', onPress: () => console.log('OK Pressed')},

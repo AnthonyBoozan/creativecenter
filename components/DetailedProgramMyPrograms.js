@@ -1,17 +1,33 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet, TouchableWithoutFeedback, Button, Picker, AsyncStorage } from 'react-native';
 var equal = require('fast-deep-equal');
+const axios = require('axios');
 
 
 class DetailedProgramMyPrograms extends Component {
   constructor(props){
     super(props);
-    this.state = {language: '',
+    this.state = {chosenlevel: '',
                   program: {},
                   valid_levels: []};
   }
   buttonPressAction = async () => {
-    this.props.handler();
+    username = await AsyncStorage.getItem('username');
+    token = await AsyncStorage.getItem('token');
+    levels = JSON.parse(await AsyncStorage.getItem('levels'));
+    class_id = this.state.program.class_id;
+    axios.post('http://ec2-54-218-225-131.us-west-2.compute.amazonaws.com:3000/api/dropclass', {
+      username: username,
+      password: token,
+      class_id: class_id
+    }).then(response => {
+      if(response.status == 200){
+        this.props.handler();
+      }
+
+    }).catch(function (error) {
+      console.log(error);
+    })
   }
   componentDidMount(){
     this.getValidLevels();
@@ -35,7 +51,6 @@ class DetailedProgramMyPrograms extends Component {
         if(x < 100){
 
           for (var level in levels){
-            console.log(level);
             if(level <= x && !temp_levels.hasOwnProperty(levels[level])){
               temp_levels[levels[level]] = level;
             }
@@ -52,7 +67,7 @@ class DetailedProgramMyPrograms extends Component {
 
     }
     keysSorted = Object.keys(temp_levels).sort(function(a,b){return temp_levels[b]-temp_levels[a]})
-    console.log(keysSorted);
+    console.log('This is the key' + keysSorted);
     this.setState({program: this.props.program.item,
                     valid_levels: keysSorted});
 
