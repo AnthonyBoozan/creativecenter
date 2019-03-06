@@ -31,6 +31,7 @@ class DetailedProgramMyPrograms extends Component {
   }
   componentDidMount(){
     this.getValidLevels();
+
   }
   componentDidUpdate(prevProps){
     /*if(this.props.program.item != undefined)
@@ -46,6 +47,7 @@ class DetailedProgramMyPrograms extends Component {
     temp_levels = {}
     levels = JSON.parse(await AsyncStorage.getItem('levels'));
     eligibleclasses = JSON.parse(await AsyncStorage.getItem('eligible_classes'));
+    console.log(eligibleclasses);
     if(this.props.program.item.class_id !== undefined){
       eligibleclasses[this.props.program.item.class_id].map(function(x){
         if(x < 100){

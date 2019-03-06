@@ -2,6 +2,9 @@ import React, { Component } from 'react';
 import { View, Text, StyleSheet, TouchableWithoutFeedback, Button, Picker, AsyncStorage, Alert } from 'react-native';
 var equal = require('fast-deep-equal');
 const axios = require('axios');
+import withPreventDoubleClick from '../constants/withPreventDoubleClick';
+
+const ButtonEx = withPreventDoubleClick(Button);
 
 
 class DetailedProgram extends Component {
@@ -143,7 +146,7 @@ class DetailedProgram extends Component {
     if(this.state.valid_class == true){
       return(
         <React.Fragment>
-        <Button onPress={this.buttonPressAction} title="Test"/>
+        <ButtonEx onPress={this.buttonPressAction} title="Test"/>
         <Picker
           selectedValue={this.state.chosenlevel}
           style={{height: 50, width: 100}}

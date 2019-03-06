@@ -18,7 +18,7 @@ import {
 } from 'react-native';
 import { WebBrowser } from 'expo';
 import { MonoText } from '../components/StyledText';
-import ProgramDetail from '../components/ProgramDetail';
+import ProgramDetailMyPrograms from '../components/ProgramDetailMyPrograms';
 import DetailedProgramMyPrograms from '../components/DetailedProgramMyPrograms';
 import HomeScreen from '../screens/HomeScreen';
 const { StatusBarManager } = NativeModules;
@@ -76,7 +76,7 @@ class LinksScreen extends React.Component {
       password: token,
     }).then(response => {
       if(response.status == 200){
-        console.log('Tester')
+        console.log(response.data[1])
         this.setState({
           programs: response.data[1]
         })
@@ -117,7 +117,7 @@ class LinksScreen extends React.Component {
             data={this.state.programs}
             renderItem={({item}) =>
             <TouchableOpacity key={item.class_id} onPress={() => this._handleProgramPress(item)} activeOpacity={this.state.highlightOpacity}>
-              <ProgramDetail program={item} />
+              <ProgramDetailMyPrograms program={item} />
             </TouchableOpacity>}
             refreshControl={
             <RefreshControl

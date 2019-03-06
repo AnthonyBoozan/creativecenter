@@ -89,7 +89,6 @@ class HomeScreen extends React.Component {
           programs: response.data[1]
         })
       }
-      console.log(this.state.programs)
     })
     .catch(function (error) {
       console.log(error);
@@ -134,7 +133,6 @@ class HomeScreen extends React.Component {
         (response.data[1]).map(function(x) {
           levels[x.id]=x.name;
         });
-        console.log(levels);
         AsyncStorage.setItem('levels', JSON.stringify(levels));
       }
     })
