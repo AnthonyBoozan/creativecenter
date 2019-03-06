@@ -32,6 +32,7 @@ class HomeScreen extends React.Component {
       refreshing: false,
       viewOverlay: false,
       programs: [],
+      eligibleclasses: [],
       opacity: 1.0,
       highlightOpacity: .2,
       highlightedClass: {item: {},
@@ -88,6 +89,7 @@ class HomeScreen extends React.Component {
           programs: response.data[1]
         })
       }
+      console.log(this.state.programs)
     })
     .catch(function (error) {
       console.log(error);
@@ -111,6 +113,7 @@ class HomeScreen extends React.Component {
             (temp_eligible_classes[x.class_id]).push(x.level_id);
           }
         });
+        this.setState({eligibleclasses: temp_eligible_classes});
         AsyncStorage.setItem('eligible_classes', JSON.stringify(temp_eligible_classes));
       }
     })
@@ -254,8 +257,7 @@ const styles = StyleSheet.create({
   container: {
     paddingTop: 22,
     flex: 1,
-    backgroundColor: '#B2B2B2',
-
+    backgroundColor: '#89F5FF',
   },
   contentContainer: {
 
