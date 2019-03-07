@@ -69,35 +69,40 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 85,
     width: '100%',
-    backgroundColor: '#89F5FF',
+    backgroundColor: '#2E8FB6',
     borderBottomWidth: 1,
     paddingBottom: 20,
   },
   name: {
     position: 'absolute',
     fontSize: 16,
-    fontFamily: 'montserrat',
-    left: 5
+    fontFamily: 'open-sans',
+    left: 5,
+    color: 'white',
+    fontWeight: 'bold'
   },
   start_date: {
     position: 'absolute',
     right: 5,
     fontSize: 14,
-    fontFamily: 'montserrat'
+    fontFamily: 'open-sans',
+    color: 'white',
   },
   end_date: {
     position: 'absolute',
     right: 5,
     top: 16,
     fontSize: 14,
-    fontFamily: 'montserrat'
+    color: 'white',
+    fontFamily: 'open-sans'
   },
   description: {
     position: 'absolute',
     left: 5,
     top: 35,
     fontSize: 12,
-    fontFamily: 'montserrat',
+    color: 'white',
+    fontFamily: 'open-sans',
     width: '95%'
   },
 });

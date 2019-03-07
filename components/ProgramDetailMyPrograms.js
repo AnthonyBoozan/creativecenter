@@ -91,34 +91,35 @@ const styles = StyleSheet.create({
   name: {
     position: 'absolute',
     fontSize: 16,
-    fontFamily: 'montserrat',
-    left: 5
+    fontFamily: 'open-sans',
+    left: 5,
+    fontWeight: 'bold'
   },
   start_date: {
     position: 'absolute',
     right: 5,
     fontSize: 14,
-    fontFamily: 'montserrat'
+    fontFamily: 'open-sans'
   },
   end_date: {
     position: 'absolute',
     right: 5,
     top: 16,
     fontSize: 14,
-    fontFamily: 'montserrat'
+    fontFamily: 'open-sans'
   },
   description: {
     position: 'absolute',
     left: 5,
     top: 35,
     fontSize: 12,
-    fontFamily: 'montserrat',
+    fontFamily: 'open-sans',
     width: '95%'
   },
   level: {
     position: 'absolute',
     fontSize: 14,
-    fontFamily: 'montserrat',
+    fontFamily: 'open-sans',
     left: 5,
     top: 17
   }
