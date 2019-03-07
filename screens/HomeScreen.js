@@ -19,9 +19,11 @@ import { WebBrowser } from 'expo';
 import { MonoText } from '../components/StyledText';
 import ProgramDetail from '../components/ProgramDetail';
 import DetailedProgram from '../components/DetailedProgram';
+import Menu from '../components/Menu';
 import { withNavigationFocus } from 'react-navigation';
 const { StatusBarManager } = NativeModules;
 const axios = require('axios');
+import SideMenu from 'react-native-side-menu';
 
 
 
@@ -29,19 +31,19 @@ class HomeScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      isOpen: false,
       refreshing: false,
       viewOverlay: false,
       programs: [],
       eligibleclasses: [],
       opacity: 1.0,
       highlightOpacity: .2,
-      highlightedClass: {item: {},
-      filterOptions: {
-        name: '',
-        time_start: 0,
-        time_end: 0,
-        level: 0,
-      }}
+      highlightedClass: {item: {}},
+      filterName: '%',
+      filterTimeStart: 0,
+      filterTimeEnd: 0,
+      filterLevel: 0,
+      filteredPrograms: [],
     };
     this.viewHandlerHome = this.viewHandlerHome.bind(this);
   }
@@ -54,14 +56,17 @@ class HomeScreen extends React.Component {
     this.refreshAllClasses();
     this.getClassLevels();
     this.getTeachersClasses();
+    this.refreshFilteredClasses();
   }
 
 
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps, prevState) {
     if(prevProps.isFocused !== this.props.isFocused){
       this.refreshAllClasses();
-
+    }
+    if(prevState.filterName !== this.state.filterName){
+      this.refreshFilteredClasses();
     }
   }
 
@@ -77,6 +82,17 @@ class HomeScreen extends React.Component {
     return this.state.viewOverlay;
   }
 
+  refreshFilteredClasses(){
+    temp_filtered_programs = [];
+    if(this.state.filterName.length != 0){
+      for(i in this.state.programs){
+        if(this.state.programs[i]['name'].includes(this.state.filterName)){
+          temp_filtered_programs.push(this.state.programs[i]);
+        }
+      }
+      this.setState({filteredPrograms: temp_filtered_programs});
+    }
+  }
   async refreshAllClasses() {
     username = await AsyncStorage.getItem('username');
     token = await AsyncStorage.getItem('token');
@@ -86,7 +102,8 @@ class HomeScreen extends React.Component {
     }).then(response => {
       if(response.status == 200 && response.data[1] !== undefined){
         this.setState({
-          programs: response.data[1]
+          programs: response.data[1],
+          filteredPrograms: response.data[1]
         })
       }
     })
@@ -177,30 +194,79 @@ class HomeScreen extends React.Component {
     });
   }
 
+  updateMenuState(isOpen) {
+    this.setState({ isOpen });
+  }
+
+  updateFilteredItems(item){
+    this.setState({
+      filterName: item['name'],
+      filterLevel: item['level'],
+      filterTimeStart: item['time_start'],
+      filterTimeEnd: item['time_end']
+    });
+  }
+
+   onMenuItemSelected = item =>
+     this.updateFilteredItems(item)
+
   render() {
+    const menu = <Menu onItemSelected={this.onMenuItemSelected}/>;
+    if(this.state.viewOverlay){
+      return(
+        <React.Fragment>
+          <TouchableWithoutFeedback onPress={() => this._handleExitOverlay()}>
+            <View style={[styles.container, {opacity: this.state.opacity}]}>
+              <FlatList
+              data={this.state.filteredPrograms}
+              renderItem={({item}) =>
+              <TouchableOpacity key={item.class_id} onPress={() => this._handleProgramPress(item)} activeOpacity={this.state.highlightOpacity}>
+                <ProgramDetail program={item} />
+              </TouchableOpacity>}
+              refreshControl={
+              <RefreshControl
+                refreshing={this.state.refreshing}
+                onRefresh={this._onRefresh}
+              />}
+              keyExtractor={(item, index) => index.toString()}
+              style={styles.contentContainer}
+            />
+            </View>
+          </TouchableWithoutFeedback>
+        <DetailedProgram show={this.state.viewOverlay} _handleProgramPress={this._handleDetailedProgramPress} program={this.state.highlightedClass} handler = {this.viewHandlerHome}/>
+        </React.Fragment>
+      );
+    }
     return (
       <React.Fragment>
-      <TouchableWithoutFeedback onPress={() => this._handleExitOverlay()}>
-        <View style={[styles.container, {opacity: this.state.opacity}]}>
-          <FlatList
-          data={this.state.programs}
-          renderItem={({item}) =>
-          <TouchableOpacity key={item.class_id} onPress={() => this._handleProgramPress(item)} activeOpacity={this.state.highlightOpacity}>
-            <ProgramDetail program={item} />
-          </TouchableOpacity>}
-          refreshControl={
-          <RefreshControl
-            refreshing={this.state.refreshing}
-            onRefresh={this._onRefresh}
-          />}
-          keyExtractor={(item, index) => index.toString()}
-          style={styles.contentContainer}
-        />
-        </View>
-      </TouchableWithoutFeedback>
-      <DetailedProgram show={this.state.viewOverlay} _handleProgramPress={this._handleDetailedProgramPress} program={this.state.highlightedClass} handler = {this.viewHandlerHome}/>
-
+        <SideMenu
+          menu={menu}
+          isOpen={this.state.isOpen}
+          onChange={isOpen => this.updateMenuState(isOpen)}
+        >
+          <TouchableWithoutFeedback onPress={() => this._handleExitOverlay()}>
+            <View style={[styles.container, {opacity: this.state.opacity}]}>
+              <FlatList
+              data={this.state.filteredPrograms}
+              renderItem={({item}) =>
+              <TouchableOpacity key={item.class_id} onPress={() => this._handleProgramPress(item)} activeOpacity={this.state.highlightOpacity}>
+                <ProgramDetail program={item} />
+              </TouchableOpacity>}
+              refreshControl={
+              <RefreshControl
+                refreshing={this.state.refreshing}
+                onRefresh={this._onRefresh}
+              />}
+              keyExtractor={(item, index) => index.toString()}
+              style={styles.contentContainer}
+            />
+            </View>
+          </TouchableWithoutFeedback>
+        </SideMenu>
+        <DetailedProgram show={this.state.viewOverlay} _handleProgramPress={this._handleDetailedProgramPress} program={this.state.highlightedClass} handler = {this.viewHandlerHome}/>
       </React.Fragment>
+
+
     );
   }
 
