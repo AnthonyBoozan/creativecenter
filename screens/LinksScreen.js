@@ -76,7 +76,6 @@ class LinksScreen extends React.Component {
       password: token,
     }).then(response => {
       if(response.status == 200){
-        console.log(response.data[1])
         this.setState({
           programs: response.data[1]
         })

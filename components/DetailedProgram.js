@@ -62,7 +62,6 @@ class DetailedProgram extends Component {
     teachers_classes = JSON.parse(await AsyncStorage.getItem('teachers_classes'));
     time_start = this.state.program['time_start'];
     time_end = this.state.program['time_end'];
-    console.log(teachers_classes);
     for(i in teachers_classes){
 
       if((time_start <= teachers_classes[i]['time_start'] && time_end <= teachers_classes[i]['time_end'] && time_end >= teachers_classes[i]['time_start']) ||

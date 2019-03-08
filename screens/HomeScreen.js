@@ -39,11 +39,12 @@ class HomeScreen extends React.Component {
       opacity: 1.0,
       highlightOpacity: .2,
       highlightedClass: {item: {}},
-      filterName: '%',
-      filterTimeStart: 0,
-      filterTimeEnd: 0,
+      filterName: ' ',
+      filterStartTime: 0,
+      filterEndTime: 0,
       filterLevel: 0,
       filteredPrograms: [],
+      filterFlag: false
     };
     this.viewHandlerHome = this.viewHandlerHome.bind(this);
   }
@@ -56,16 +57,15 @@ class HomeScreen extends React.Component {
     this.refreshAllClasses();
     this.getClassLevels();
     this.getTeachersClasses();
-    this.refreshFilteredClasses();
+
   }
-
-
 
   componentDidUpdate(prevProps, prevState) {
     if(prevProps.isFocused !== this.props.isFocused){
       this.refreshAllClasses();
+      this.refreshFilteredClasses();
     }
-    if(prevState.filterName !== this.state.filterName){
+    if((prevState.programs !== this.state.programs) || (prevState.filterFlag !== this.state.filterFlag)){
       this.refreshFilteredClasses();
     }
   }
@@ -84,11 +84,23 @@ class HomeScreen extends React.Component {
 
   refreshFilteredClasses(){
     temp_filtered_programs = [];
-    if(this.state.filterName.length != 0){
+    if(!/\S/.test(this.state.filterName) && this.state.filterStartTime == 0 && this.state.filterEndTime == 0 && this.state.filterLevel == 0){
+      this.setState({filteredPrograms: this.state.programs});
+    }
+    else{
       for(i in this.state.programs){
-        if(this.state.programs[i]['name'].includes(this.state.filterName)){
-          temp_filtered_programs.push(this.state.programs[i]);
+        if(this.state.programs[i]['name'].includes(this.state.filterName) &&
+            (this.state.programs[i]['time_start'] >= this.state.filterStartTime || this.state.filterStartTime == 0) &&
+            (this.state.programs[i]['time_end'] <= this.state.filterEndTime || this.state.filterEndTime == 0) &&
+            (this.state.eligibleclasses[this.state.programs[i]['class_id']].includes(parseInt(this.state.filterLevel)) || this.state.filterLevel == 0))
+            {
+              //(this.state.eligibleclasses[this.state.programs[i]["class_id"]].includes(this.state.filterLevel) || this.state.filterLevel == 0)
+              console.log()
+              console.log(this.state.filterLevel);
+              console.log(this.state.eligibleclasses[this.state.programs[i]['class_id']])
+              temp_filtered_programs.push(this.state.programs[i]);
         }
+
       }
       this.setState({filteredPrograms: temp_filtered_programs});
     }
@@ -101,10 +113,19 @@ class HomeScreen extends React.Component {
       password: token,
     }).then(response => {
       if(response.status == 200 && response.data[1] !== undefined){
-        this.setState({
-          programs: response.data[1],
-          filteredPrograms: response.data[1]
-        })
+        if(this.state.filteredPrograms.length == 0){
+          this.setState({
+            programs: response.data[1],
+            filteredPrograms: response.data[1]
+          })
+        }
+        else{
+          this.setState({
+            programs: response.data[1],
+
+
+          })
+        }
       }
     })
     .catch(function (error) {
@@ -199,11 +220,18 @@ class HomeScreen extends React.Component {
   }
 
   updateFilteredItems(item){
+    if(!/\S/.test(item['name'])){
+      item['name'] = '';
+      this.setState({
+        filterFlag: !this.state.filterFlag
+      });
+    }
     this.setState({
       filterName: item['name'],
       filterLevel: item['level'],
-      filterTimeStart: item['time_start'],
-      filterTimeEnd: item['time_end']
+      filterStartTime: item['time_start'],
+      filterEndTime: item['time_end'],
+      filterFlag: !this.state.filterFlag
     });
   }
 

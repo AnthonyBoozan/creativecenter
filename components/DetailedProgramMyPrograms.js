@@ -47,7 +47,6 @@ class DetailedProgramMyPrograms extends Component {
     temp_levels = {}
     levels = JSON.parse(await AsyncStorage.getItem('levels'));
     eligibleclasses = JSON.parse(await AsyncStorage.getItem('eligible_classes'));
-    console.log(eligibleclasses);
     if(this.props.program.item.class_id !== undefined){
       eligibleclasses[this.props.program.item.class_id].map(function(x){
         if(x < 100){
@@ -69,7 +68,6 @@ class DetailedProgramMyPrograms extends Component {
 
     }
     keysSorted = Object.keys(temp_levels).sort(function(a,b){return temp_levels[b]-temp_levels[a]})
-    console.log('This is the key' + keysSorted);
     this.setState({program: this.props.program.item,
                     valid_levels: keysSorted});
 
