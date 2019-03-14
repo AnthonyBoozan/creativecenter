@@ -127,6 +127,7 @@ export default class Menu extends React.Component {
             this.setState({filteredLevel: itemValue})
           }>
           <Picker.Item label="None" value="0" />
+          <Picker.Item label="Available to me" value ="1" />
           <Picker.Item label="Lead" value="90" />
           <Picker.Item label="Lead Assistant" value="80" />
           <Picker.Item label="Volunteer Ambassador" value="109" />
@@ -152,7 +153,7 @@ export default class Menu extends React.Component {
           title="Filter"
         />
         <Button
-          onPress={() => this.setState({filteredName: ' ', filteredStartTime: 0, filteredEndTime: 0, filteredLevel: 0, textStartTime: 'None', textEndTime: 'None'})}
+          onPress={() => this.setState({filteredName: '', filteredStartTime: 0, filteredEndTime: 0, filteredLevel: 0, textStartTime: 'None', textEndTime: 'None'})}
           title="Reset"
         />
       </ScrollView>

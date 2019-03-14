@@ -23,7 +23,8 @@ export default class SignInScreen extends React.Component {
   constructor(props){
     super(props);
     this.state = {username: '',
-                  password: ''};
+                  password: '',
+                  activityIndicationShow: false};
     this._signInAsync = this._signInAsync.bind(this);
   }
 
@@ -41,7 +42,6 @@ export default class SignInScreen extends React.Component {
   _signInAsync = async () => {
     var signInUsername = this.state.username;
     var signInPassword = this.state.password;
-
     axios.post('http://ec2-54-218-225-131.us-west-2.compute.amazonaws.com:3000/api/authenticate', {
       username: signInUsername,
       password: CryptoJs.HmacSHA1(signInPassword, 'hop390n372oi').toString(),

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, Overlay, TouchableWithoutFeedback, Alert } from 'react-native';
+import { View, Text, StyleSheet, Overlay, TouchableWithoutFeedback, Alert, AsyncStorage } from 'react-native';
 var moment = require('moment');
 
 class ProgramDetail extends Component{
@@ -7,16 +7,29 @@ class ProgramDetail extends Component{
     super(props);
     this.state = {date_start: '',
                   date_end: '',
-                  description: ''};
+                  description: '',
+                  valid_class: false};
 
   }
 
   componentDidMount() {
+    this.checkIfValid().then(this.finishComponentMount());
+
+
+  }
+
+  finishComponentMount(){
     start_date = this.timeConverter(this.props.program.time_start);
     end_date = this.timeConverter(this.props.program.time_end);
     this.setState({date_start: start_date,
                   date_end: end_date})
     this.descriptionMinifier();
+  }
+  async checkIfValid(){
+    eligibleclasses = JSON.parse(await AsyncStorage.getItem('eligible_classes'));
+    if(eligibleclasses[this.props.program.class_id] !== undefined){
+      this.setState({valid_class: true});
+    }
   }
 
   descriptionMinifier(){
@@ -53,14 +66,26 @@ class ProgramDetail extends Component{
   }
 
   render() {
-    return(
-        <View style={styles.viewstyle}>
-            <Text style={styles.name}>{this.props.program.name}</Text>
-            <Text style={styles.start_date}>{this.state.date_start}</Text>
-            <Text style={styles.end_date}>{this.state.date_end}</Text>
-            <Text style={styles.description}>foo bar foo bar foo bar foo bar foo bar foo bar foo bar foo bar foo bar foo bar foo bar foo bar foo bar foo bar foo bar foo bar foo bar foo bar foo bar foo bar ...</Text>
-        </View>
-    );
+    if(this.state.valid_class){
+      return(
+          <View style={styles.viewstyle}>
+              <Text style={styles.name}>{this.props.program.name}</Text>
+              <Text style={styles.start_date}>Start Date: {this.state.date_start}</Text>
+              <Text style={styles.end_date}>End Date: {this.state.date_end}</Text>
+              <Text style={styles.description}>foo bar foo bar foo bar foo bar foo bar foo bar foo bar foo bar foo bar foo bar foo bar foo bar foo bar foo bar foo bar foo bar foo bar foo bar foo bar foo bar ...</Text>
+          </View>
+      );
+    }
+    else{
+      return(
+          <View style={styles.viewstyleopacity}>
+              <Text style={styles.name}>{this.props.program.name}</Text>
+              <Text style={styles.start_date}>Start Date: {this.state.date_start}</Text>
+              <Text style={styles.end_date}>End Date: {this.state.date_end}</Text>
+              <Text style={styles.description}>foo bar foo bar foo bar foo bar foo bar foo bar foo bar foo bar foo bar foo bar foo bar foo bar foo bar foo bar foo bar foo bar foo bar foo bar foo bar foo bar ...</Text>
+          </View>
+      );
+    }
   }
 };
 
@@ -72,6 +97,15 @@ const styles = StyleSheet.create({
     backgroundColor: '#2E8FB6',
     borderBottomWidth: 1,
     paddingBottom: 20,
+  },
+  viewstyleopacity: {
+    flex: 1,
+    height: 85,
+    width: '100%',
+    backgroundColor: '#2E8FB6',
+    borderBottomWidth: 1,
+    paddingBottom: 20,
+    opacity: .3
   },
   name: {
     position: 'absolute',

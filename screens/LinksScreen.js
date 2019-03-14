@@ -32,11 +32,11 @@ class LinksScreen extends React.Component {
     this.state = {
       refreshing: false,
       programs: [],
-      highlightedClass: {item: {}}
+      highlightedClass: {item: {}},
+      checkInClassId: 0,
     };
     this.viewHandlerLink = this.viewHandlerLink.bind(this);
   }
-
 
   static navigationOptions = {
     header: null,
@@ -50,6 +50,7 @@ class LinksScreen extends React.Component {
   componentDidUpdate(prevProps) {
     if(prevProps.isFocused !== this.props.isFocused){
       this.refreshTeachersClasses();
+      this.checkForCheckIn()
     }
   }
 
@@ -64,8 +65,28 @@ class LinksScreen extends React.Component {
   }
 
   async initialSetup(){
-    progs = await AsyncStorage.getItem('teachers_classes');
-    this.setState({programs: JSON.parse(progs)});
+    progs = JSON.parse(await AsyncStorage.getItem('teachers_classes'));
+    checkInClassId = await AsyncStorage.getItem('checkInClassId');
+    this.setState({programs: progs});
+    if(checkInClassId != '0'){
+        for(i in progs){
+          if(progs[i]['class_id'] == checkInClassId){
+            this._handleProgramPress(progs[i]);
+          }
+        }
+    }
+  }
+
+  async checkForCheckIn(){
+    progs = JSON.parse(await AsyncStorage.getItem('teachers_classes'));
+    now = (new Date()).getTime() / 1000;
+    for(i in progs){
+      if(now > progs[i]['time_start'] - 1800000){
+        if((progs[i]['time_start'] > now) && progs[i]['checked_in'] != true){
+          AsyncStorage.setItem('checkInClassId', progs[i]['class_id'].toString());
+        }
+      }
+    }
   }
 
   async refreshTeachersClasses() {

@@ -15,7 +15,7 @@ import {
   RefreshControl,
   AsyncStorage
 } from 'react-native';
-import { WebBrowser } from 'expo';
+import { WebBrowser, Notifications } from 'expo';
 import { MonoText } from '../components/StyledText';
 import ProgramDetail from '../components/ProgramDetail';
 import DetailedProgram from '../components/DetailedProgram';
@@ -39,12 +39,14 @@ class HomeScreen extends React.Component {
       opacity: 1.0,
       highlightOpacity: .2,
       highlightedClass: {item: {}},
-      filterName: ' ',
+      filterName: '',
       filterStartTime: 0,
       filterEndTime: 0,
       filterLevel: 0,
       filteredPrograms: [],
-      filterFlag: false
+      filterFlag: false,
+      checkInFlag: false,
+      checkInClass: 0
     };
     this.viewHandlerHome = this.viewHandlerHome.bind(this);
   }
@@ -53,20 +55,47 @@ class HomeScreen extends React.Component {
   };
 
   componentDidMount() {
+    this.handleComponentMount().then(this.checkForCheckIn());
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if(prevState.checkInFlag == false && (prevState.checkInFlag != this.state.checkInFlag)){
+      this.props.navigation.navigate('ProgramsStack');
+    }
+    else if(prevProps.isFocused !== this.props.isFocused){
+      this.refreshAllClasses();
+      this.refreshFilteredClasses();
+      this.refreshEligibleClasses();
+      this.checkForCheckIn();
+    }
+    else if((prevState.programs !== this.state.programs) || (prevState.filterFlag !== this.state.filterFlag)){
+      this.refreshFilteredClasses();
+    }
+  }
+
+  async handleComponentMount(){
     this.refreshEligibleClasses();
     this.refreshAllClasses();
     this.getClassLevels();
     this.getTeachersClasses();
-
+    await AsyncStorage.setItem('checkInClassId', '0');
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    if(prevProps.isFocused !== this.props.isFocused){
-      this.refreshAllClasses();
-      this.refreshFilteredClasses();
+  async checkForCheckIn(){
+    progs = JSON.parse(await AsyncStorage.getItem('teachers_classes'));
+    now = (new Date()).getTime() / 1000;
+    flag = false;
+    for(i in progs){
+      if(now > progs[i]['time_start'] - 1800000){
+        if((progs[i]['time_start'] > now) && progs[i]['checked_in'] != true){
+          await AsyncStorage.setItem('checkInClassId', progs[i]['class_id'].toString());
+          this.setState({checkInFlag: true});
+          flag = true;
+        }
+      }
     }
-    if((prevState.programs !== this.state.programs) || (prevState.filterFlag !== this.state.filterFlag)){
-      this.refreshFilteredClasses();
+    if(flag == false){
+      this.setState({checkInFlag: false})
     }
   }
 
@@ -91,14 +120,20 @@ class HomeScreen extends React.Component {
       for(i in this.state.programs){
         if(this.state.programs[i]['name'].includes(this.state.filterName) &&
             (this.state.programs[i]['time_start'] >= this.state.filterStartTime || this.state.filterStartTime == 0) &&
-            (this.state.programs[i]['time_end'] <= this.state.filterEndTime || this.state.filterEndTime == 0) &&
-            (this.state.eligibleclasses[this.state.programs[i]['class_id']].includes(parseInt(this.state.filterLevel)) || this.state.filterLevel == 0))
+            (this.state.programs[i]['time_end'] <= this.state.filterEndTime || this.state.filterEndTime == 0))
             {
+              if(this.state.eligibleclasses[this.state.programs[i]['class_id']] != undefined){
+                if((this.state.eligibleclasses[this.state.programs[i]['class_id']].includes(parseInt(this.state.filterLevel)) || this.state.filterLevel == 0)){
+                  temp_filtered_programs.push(this.state.programs[i]);
+                }
+                else if(this.state.filterLevel == 1){
+                  temp_filtered_programs.push(this.state.programs[i]);
+                }
+              }
+              else if(this.state.filterLevel == 0){
+                temp_filtered_programs.push(this.state.programs[i]);
+              }
               //(this.state.eligibleclasses[this.state.programs[i]["class_id"]].includes(this.state.filterLevel) || this.state.filterLevel == 0)
-              console.log()
-              console.log(this.state.filterLevel);
-              console.log(this.state.eligibleclasses[this.state.programs[i]['class_id']])
-              temp_filtered_programs.push(this.state.programs[i]);
         }
 
       }

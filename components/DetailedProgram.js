@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableWithoutFeedback, Button, Picker, Async
 var equal = require('fast-deep-equal');
 const axios = require('axios');
 import withPreventDoubleClick from '../constants/withPreventDoubleClick';
+import { WebBrowser, Notifications } from 'expo';
 
 const ButtonEx = withPreventDoubleClick(Button);
 
@@ -35,6 +36,7 @@ class DetailedProgram extends Component {
         class_id: class_id
       }).then(response => {
         if(response.status == 200){
+          this.setNotification();
           this.props.handler();
         }
 
@@ -58,6 +60,14 @@ class DetailedProgram extends Component {
     this.getValidLevels();
   }
 
+  setNotification(){
+    var dateObj = new Date((this.state.program['time_start'] * 1000) - 1800000);
+    localNotification = {title: 'Time for a check in!', body: 'You have a class in 30 minutes! Please check in.'};
+    schedulingOptions = {time: dateObj};
+
+    Notifications.scheduleLocalNotificationAsync(localNotification, schedulingOptions)
+  }
+
   async checkClassTimeslot(){
     teachers_classes = JSON.parse(await AsyncStorage.getItem('teachers_classes'));
     time_start = this.state.program['time_start'];
@@ -75,20 +85,14 @@ class DetailedProgram extends Component {
   }
 
   componentDidUpdate(prevProps){
-    /*if(this.props.program.item != undefined)
-    if(this.props.program.item !== prevProps.program.item && this.props.progra){
-      this.getValidLevels();
-    }*/
-
     if(prevProps.show == true && this.props.show == false){
       this.setState({valid_class: false});
     }
     else if(prevProps.show == false && this.props.show == true){
       this.getValidLevels();
     }
-
-
   }
+
   async getValidLevels(){
     temp_levels = {}
     levels = JSON.parse(await AsyncStorage.getItem('levels'));
@@ -98,23 +102,12 @@ class DetailedProgram extends Component {
         this.setState({valid_class: true});
       }
       eligibleclasses[this.props.program.item.class_id].map(function(x){
-        if(x < 100){
-
-          for (var level in levels){
-            if(level <= x && !temp_levels.hasOwnProperty(levels[level])){
-              temp_levels[levels[level]] = level;
-            }
+        for (var level in levels){
+          if(level == x && !temp_levels.hasOwnProperty(levels[level])){
+            temp_levels[levels[level]] = level;
           }
-
-        }
-        else{
-          if(!temp_levels.hasOwnProperty(levels[level])){
-            temp_levels[levels[level]] = x;
-          }
-
         }
       });
-
     }
     else{
       if(this.state.valid_class && this.props.show == true){
