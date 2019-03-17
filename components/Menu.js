@@ -21,21 +21,6 @@ const window = Dimensions.get('window');
 const uri = 'https://pickaface.net/gallery/avatar/Opi51c74d0125fd4.png';
 import sty from "../constants/Button.js";
 
-const styles = StyleSheet.create({
-  menu: {
-    flex: 1,
-    width: window.width,
-    height: window.height,
-    backgroundColor: 'gray',
-    padding: 20,
-  },
-  item: {
-    fontSize: 14,
-    fontWeight: '300',
-    paddingTop: 5,
-  },
-});
-
 export default class Menu extends React.Component {
   constructor(props){
     super(props);
@@ -100,29 +85,42 @@ export default class Menu extends React.Component {
   }
 
   render(){
+    if(this.props.hide != false){
+      return null;
+    }
     return (
       <ScrollView scrollsToTop={false} style={styles.menu}>
-        <Text>Filter</Text>
+        <View style={styles.filterDiv}>
+          <Text style={styles.filter}>Filter</Text>
+        </View>
         <TextInput
-          style={{height: 40, borderColor: 'gray', borderWidth: 1, backgroundColor: 'red'}}
+          style={styles.filterBar}
           onChangeText={(text) => this.setState({filteredName: text})}
           value={this.state.filteredName}
         />
-        <TouchableOpacity onPress={this._showDateTimeStartPicker}>
-          <View style={sty.button}>
-            <Text>Earliest Time</Text>
-          </View>
-        </TouchableOpacity>
-        <Text>{this.state.textStartTime}</Text>
-        <TouchableOpacity onPress={this._showDateTimeEndPicker}>
-          <View style={sty.button}>
-            <Text>Lateset Time</Text>
-          </View>
-        </TouchableOpacity>
-        <Text>{this.state.textEndTime}</Text>
+        <View style={styles.buttonDiv}>
+          <TouchableOpacity onPress={this._showDateTimeStartPicker}>
+            <View style={styles.button}>
+              <Text style={{fontFamily: 'open-sans'}}>Earliest Time</Text>
+            </View>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.buttonDiv}>
+          <Text style={styles.timetext}>{this.state.textStartTime}</Text>
+        </View>
+        <View style={styles.filterDiv}>
+          <TouchableOpacity onPress={this._showDateTimeEndPicker}>
+            <View style={styles.button}>
+              <Text style={{fontFamily: 'open-sans'}}>Lateset Time</Text>
+            </View>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.filterDiv}>
+          <Text style={styles.timetext}>{this.state.textEndTime}</Text>
+        </View>
         <Picker
           selectedValue={this.state.filteredLevel}
-          style={{height: 50, width: 100}}
+          style={{height: 50, width: '65%'}}
           onValueChange={(itemValue, itemIndex) =>
             this.setState({filteredLevel: itemValue})
           }>
@@ -148,19 +146,91 @@ export default class Menu extends React.Component {
           onCancel={this._hideDateTimeEndPicker}
           mode='datetime'
         />
-        <Button
-          onPress={() => this.applyFilter()}
-          title="Filter"
-        />
-        <Button
-          onPress={() => this.setState({filteredName: '', filteredStartTime: 0, filteredEndTime: 0, filteredLevel: 0, textStartTime: 'None', textEndTime: 'None'})}
-          title="Reset"
-        />
+        <View style={styles.filterbuttonDiv}>
+          <TouchableOpacity onPress={() => this.applyFilter()}>
+            <View style={styles.filterbutton}>
+              <Text style={{fontFamily: 'open-sans'}}>Filter</Text>
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => this.setState({filteredName: '', filteredStartTime: 0, filteredEndTime: 0, filteredLevel: 0, textStartTime: 'None', textEndTime: 'None'})}>
+            <View style={styles.filterbutton}>
+              <Text style={{fontFamily: 'open-sans'}}>Reset</Text>
+            </View>
+          </TouchableOpacity>
+        </View>
       </ScrollView>
     );
   }
 
 }
+
+const styles = StyleSheet.create({
+  filterDiv:{
+    alignItems: 'center',
+    width: '65%',
+  },
+  filterbuttonDiv:{
+    alignItems: 'center',
+    width: '65%',
+    flexDirection: 'row'
+  },
+  buttonDiv:{
+    alignItems: 'center',
+    width: '65%',
+    borderRadius: 2,
+    borderColor: 'black'
+  },
+  filter: {
+    fontWeight: 'bold',
+    fontFamily: 'open-sans',
+    fontSize: 20
+  },
+  filterBar:{
+    height: 40,
+    borderColor: 'gray',
+    borderWidth: 1,
+    backgroundColor: 'white',
+    width: '65%',
+    padding: 5
+  },
+  menu: {
+    flex: 1,
+    width: window.width,
+    height: window.height,
+    backgroundColor: 'gray',
+    padding: 10,
+    paddingTop: 20,
+  },
+  item: {
+    fontSize: 14,
+    fontWeight: '300',
+    paddingTop: 5,
+  },
+  button: {
+    backgroundColor: "lightblue",
+    padding: 12,
+    margin: 16,
+    width: 200,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 4,
+    borderColor: "rgba(0, 0, 0, 0.1)",
+  },
+  filterbutton: {
+    backgroundColor: "lightblue",
+    padding: 12,
+    margin: 14,
+    width: 100,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 4,
+    borderColor: "rgba(0, 0, 0, 0.1)",
+  },
+  timetext:{
+    fontFamily: 'open-sans',
+    fontSize: 18
+  }
+});
 
 Menu.propTypes = {
   onItemSelected: PropTypes.func.isRequired,

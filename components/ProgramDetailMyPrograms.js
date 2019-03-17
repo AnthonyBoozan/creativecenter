@@ -73,7 +73,7 @@ class ProgramDetail extends Component{
             <Text style={styles.start_date}>{this.state.date_start}</Text>
             <Text style={styles.end_date}>{this.state.date_end}</Text>
             <Text style={styles.level}>{this.state.level}</Text>
-            <Text style={styles.description}>foo bar foo bar foo bar foo bar foo bar foo bar foo bar foo bar foo bar foo bar foo bar foo bar foo bar foo bar foo bar foo bar foo bar foo bar foo bar foo bar ...</Text>
+            <Text style={styles.description}>{this.state.description}</Text>
         </View>
     );
   }

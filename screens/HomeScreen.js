@@ -274,38 +274,15 @@ class HomeScreen extends React.Component {
      this.updateFilteredItems(item)
 
   render() {
-    const menu = <Menu onItemSelected={this.onMenuItemSelected}/>;
-    if(this.state.viewOverlay){
-      return(
-        <React.Fragment>
-          <TouchableWithoutFeedback onPress={() => this._handleExitOverlay()}>
-            <View style={[styles.container, {opacity: this.state.opacity}]}>
-              <FlatList
-              data={this.state.filteredPrograms}
-              renderItem={({item}) =>
-              <TouchableOpacity key={item.class_id} onPress={() => this._handleProgramPress(item)} activeOpacity={this.state.highlightOpacity}>
-                <ProgramDetail program={item} />
-              </TouchableOpacity>}
-              refreshControl={
-              <RefreshControl
-                refreshing={this.state.refreshing}
-                onRefresh={this._onRefresh}
-              />}
-              keyExtractor={(item, index) => index.toString()}
-              style={styles.contentContainer}
-            />
-            </View>
-          </TouchableWithoutFeedback>
-        <DetailedProgram show={this.state.viewOverlay} _handleProgramPress={this._handleDetailedProgramPress} program={this.state.highlightedClass} handler = {this.viewHandlerHome}/>
-        </React.Fragment>
-      );
-    }
+    const menu = <Menu onItemSelected={this.onMenuItemSelected} hide={this.state.viewOverlay}/>;
+
     return (
       <React.Fragment>
         <SideMenu
           menu={menu}
           isOpen={this.state.isOpen}
           onChange={isOpen => this.updateMenuState(isOpen)}
+          disableGestures={this.state.viewOverlay}
         >
           <TouchableWithoutFeedback onPress={() => this._handleExitOverlay()}>
             <View style={[styles.container, {opacity: this.state.opacity}]}>

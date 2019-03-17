@@ -72,7 +72,7 @@ class ProgramDetail extends Component{
               <Text style={styles.name}>{this.props.program.name}</Text>
               <Text style={styles.start_date}>Start Date: {this.state.date_start}</Text>
               <Text style={styles.end_date}>End Date: {this.state.date_end}</Text>
-              <Text style={styles.description}>foo bar foo bar foo bar foo bar foo bar foo bar foo bar foo bar foo bar foo bar foo bar foo bar foo bar foo bar foo bar foo bar foo bar foo bar foo bar foo bar ...</Text>
+              <Text style={styles.description}>{this.state.description}</Text>
           </View>
       );
     }
@@ -82,7 +82,7 @@ class ProgramDetail extends Component{
               <Text style={styles.name}>{this.props.program.name}</Text>
               <Text style={styles.start_date}>Start Date: {this.state.date_start}</Text>
               <Text style={styles.end_date}>End Date: {this.state.date_end}</Text>
-              <Text style={styles.description}>foo bar foo bar foo bar foo bar foo bar foo bar foo bar foo bar foo bar foo bar foo bar foo bar foo bar foo bar foo bar foo bar foo bar foo bar foo bar foo bar ...</Text>
+              <Text style={styles.description}>{this.state.description}</Text>
           </View>
       );
     }

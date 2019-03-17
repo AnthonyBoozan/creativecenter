@@ -29,7 +29,6 @@ export default class UserRegistrationScreen extends React.Component {
   }
 
   _back = async () => {
-    console.log('back to userreg')
     this.props.navigation.navigate('Auth');
   }
 

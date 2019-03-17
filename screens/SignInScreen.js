@@ -36,9 +36,11 @@ export default class SignInScreen extends React.Component {
     this.props.navigation.navigate('UserRegistration');
 
   }
+
   componentDidMount(){
-    console.log(Dimensions.get('window').width);
+
   }
+
   _signInAsync = async () => {
     var signInUsername = this.state.username;
     var signInPassword = this.state.password;

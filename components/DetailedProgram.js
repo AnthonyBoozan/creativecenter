@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, TouchableWithoutFeedback, Button, Picker, AsyncStorage, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableWithoutFeedback, Button, Picker, AsyncStorage, Alert, TouchableOpacity } from 'react-native';
 var equal = require('fast-deep-equal');
 const axios = require('axios');
 import withPreventDoubleClick from '../constants/withPreventDoubleClick';
@@ -58,6 +58,25 @@ class DetailedProgram extends Component {
 
   componentDidMount(){
     this.getValidLevels();
+  }
+
+  timeConverter(UNIX_timestamp) {
+    var a = new Date(UNIX_timestamp * 1000);
+    var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    var year = a.getFullYear();
+    var month = months[a.getMonth()];
+    var date = a.getDate();
+    var hour = a.getHours();
+    var min = a.getMinutes() < 10 ? '0' + a.getMinutes() : a.getMinutes();
+    var time = date + ' ' + month + ' ' + year + ' ' + (hour % 12) + ':' + min;
+    if(hour > 12){
+      time = time + ' PM';
+    }
+    else{
+      time = time + ' AM'
+    }
+
+    return time;
   }
 
   setNotification(){
@@ -129,7 +148,7 @@ class DetailedProgram extends Component {
 
   pickerItemRender(){
     return this.state.valid_levels.map(level =>
-      <Picker.Item key={level} label={this.cleanseLabelString(level)} value={level} />
+      <Picker.Item key={level} label={this.cleanseLabelString(level)} value={level} color="black" />
 
     )
   }
@@ -138,10 +157,15 @@ class DetailedProgram extends Component {
     if(this.state.valid_class == true){
       return(
         <React.Fragment>
-        <ButtonEx onPress={this.buttonPressAction} title="Test"/>
+        <TouchableOpacity onPress={this.buttonPressAction} style={styles.signup}>
+          <View style={styles.button}>
+            <Text style={{color: 'white'}}>Sign Up</Text>
+          </View>
+        </TouchableOpacity>
         <Picker
           selectedValue={this.state.chosenlevel}
-          style={{height: 50, width: 100}}
+          style={styles.picker}
+          itemStyle={{color:'white'}}
           onValueChange={(itemValue, itemIndex) =>
             this.setState({chosenlevel: itemValue,}
             )}>
@@ -163,8 +187,18 @@ class DetailedProgram extends Component {
       return(
           <View style={{position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, justifyContent: 'center', alignItems: 'center'}} pointerEvents='box-none'>
             <View style={styles.textbox}>
-              <Text>{this.props.program.item.name}</Text>
-              <Text>{this.props.program.item.description}</Text>
+              <View style={styles.classnameview}>
+                <Text style={styles.classname}>{this.props.program.item.name}</Text>
+              </View>
+              <View style={styles.timebox}>
+                <Text style={{fontWeight: 'bold', fontSize: 16}}> Time Start:<Text style={{fontWeight: 'normal', fontSize: 14}}> {this.timeConverter(this.props.program.item.time_start)} </Text></Text>
+              </View>
+              <View style={styles.timebox}>
+                <Text style={{fontWeight: 'bold', fontSize: 16}}> Time End:<Text style={{fontWeight: 'normal', fontSize: 14}}> {this.timeConverter(this.props.program.item.time_end)} </Text> </Text>
+              </View>
+
+              <Text style={styles.description}>{this.props.program.item.description}</Text>
+
               {this.renderSignupOptions()}
             </View>
           </View>
@@ -177,10 +211,57 @@ const styles = StyleSheet.create({
   textbox: {
     position: 'absolute',
     opacity: 1,
-    backgroundColor: 'white',
+    backgroundColor: '#F0FFFF',
     height: '60%',
     width: '75%',
-    zIndex: 6
+    zIndex: 6,
+    fontFamily: 'open-sans',
+    borderRadius: 8
+
+  },
+  classnameview: {
+    left: 5,
+    alignItems: 'center'
+  },
+  classname: {
+    fontSize: 18,
+    fontFamily: 'open-sans',
+    fontWeight: 'bold',
+  },
+  description: {
+    marginTop: 5,
+    left: 5,
+    borderRadius: 1,
+    borderColor: 'black'
+  },
+  button: {
+    backgroundColor: "red",
+    padding: 12,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 4,
+    borderColor: "rgba(0, 0, 0, 0.1)",
+    fontFamily: 'open-sans',
+  },
+  signup: {
+    position: 'absolute',
+    width: 100,
+    height: '11%',
+    right: 0,
+    bottom: 0,
+    margin: 16,
+  },
+  picker: {
+    position: 'absolute',
+    bottom: 0,
+    margin: 16,
+    height: '11%',
+    width: 150,
+    backgroundColor: "lightblue",
+  },
+  timebox: {
+    flexDirection: 'row',
+    flexWrap: 'wrap'
   }
 });
 
