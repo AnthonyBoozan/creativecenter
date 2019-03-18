@@ -50,7 +50,6 @@ class LinksScreen extends React.Component {
   componentDidUpdate(prevProps) {
     if(prevProps.isFocused !== this.props.isFocused){
       this.refreshTeachersClasses();
-      this.checkForCheckIn()
     }
   }
 
@@ -82,10 +81,7 @@ class LinksScreen extends React.Component {
     now = (new Date()).getTime() / 1000;
     for(i in progs){
       if(now > progs[i]['time_start'] - 1800){
-        console.log(now)
-        console.log(progs[i]['time_start'] - 1800)
         if((progs[i]['time_start'] > now) && progs[i]['checked_in'] != true){
-          console.log('test')
           AsyncStorage.setItem('checkInClassId', progs[i]['class_id'].toString());
         }
       }
@@ -103,7 +99,8 @@ class LinksScreen extends React.Component {
         this.setState({
           programs: response.data[1]
         })
-        AsyncStorage.setItem('teachers_classes', JSON.stringify(response.data[1]));
+        AsyncStorage.setItem('teachers_classes', JSON.stringify(response.data[1])).then(this.checkForCheckIn());
+
       }
     })
     .catch(function (error) {

@@ -55,7 +55,7 @@ class HomeScreen extends React.Component {
   };
 
   componentDidMount() {
-    this.handleComponentMount().then(this.checkForCheckIn());
+    this.handleComponentMount();
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -63,7 +63,7 @@ class HomeScreen extends React.Component {
       this.props.navigation.navigate('ProgramsStack');
     }
     else if(prevProps.isFocused !== this.props.isFocused){
-      this.handleComponentMount().then(this.checkForCheckIn());
+      this.handleComponentMount();
     }
     else if((prevState.programs !== this.state.programs) || (prevState.filterFlag !== this.state.filterFlag)){
       this.refreshFilteredClasses();
@@ -75,7 +75,8 @@ class HomeScreen extends React.Component {
     this.refreshAllClasses();
     this.getClassLevels();
     this.getTeachersClasses();
-    await AsyncStorage.setItem('checkInClassId', '0');
+    //await AsyncStorage.setItem('checkInClassId', '0');
+
   }
 
   async checkForCheckIn(){
@@ -85,7 +86,6 @@ class HomeScreen extends React.Component {
     for(i in progs){
       if(now > progs[i]['time_start'] - 1800){
         if((progs[i]['time_start'] > now) && progs[i]['checked_in'] != true){
-          console.log('jfijfijf')
           await AsyncStorage.setItem('checkInClassId', progs[i]['class_id'].toString());
           this.setState({checkInFlag: true});
           flag = true;
@@ -93,7 +93,6 @@ class HomeScreen extends React.Component {
       }
     }
     if(flag == false){
-      console.log('BLEHEHF')
       this.setState({checkInFlag: false})
     }
   }
@@ -221,7 +220,7 @@ class HomeScreen extends React.Component {
       password: token,
     }).then(response => {
       if(response.status == 200){
-        AsyncStorage.setItem('teachers_classes', JSON.stringify(response.data[1]));
+        AsyncStorage.setItem('teachers_classes', JSON.stringify(response.data[1])).then(this.checkForCheckIn());
       }
     })
     .catch(function (error) {

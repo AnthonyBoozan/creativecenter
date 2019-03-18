@@ -169,7 +169,7 @@ class DetailedProgramMyPrograms extends Component {
       if(response.status == 200){
         this.setState({showCheckIn: false});
         AsyncStorage.setItem('checkInClassId', '0');
-        
+
       }
     }).catch(function (error) {
       console.log(error);
@@ -198,19 +198,18 @@ class DetailedProgramMyPrograms extends Component {
             </View>
 
             <Text style={styles.description}>{this.props.program.item.description}</Text>
-            <TouchableOpacity onPress={this.checkIn}>
+            <TouchableOpacity onPress={this.checkIn} style={styles.drop}>
                 <Animated.View style={{
-                  backgroundColor: "lightblue",
+                  backgroundColor: "red",
                   padding: 12,
-                  margin: 16,
-                  width: '50%',
                   justifyContent: "center",
                   alignItems: "center",
                   borderRadius: 4,
                   borderColor: "rgba(0, 0, 0, 0.1)",
                   transform: [{scale: this.springValue}],
+                  fontFamily: 'open-sans'
                 }}>
-                  <Text>Check in!</Text>
+                  <Text style={{color: 'white'}}>Check in!</Text>
                 </Animated.View>
               </TouchableOpacity>
           </View>
@@ -219,12 +218,23 @@ class DetailedProgramMyPrograms extends Component {
     }
     else if((this.props.program.item.time_start - 1800) < (new Date()).getTime() / 1000){
       return(
-          <View style={{position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, justifyContent: 'center', alignItems: 'center'}} pointerEvents='box-none'>
-            <View style={styles.textbox}>
-              <Text>{this.props.program.item.name}</Text>
-              <Text>{this.props.program.item.description}</Text>
+        <View style={{position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, justifyContent: 'center', alignItems: 'center'}} pointerEvents='box-none'>
+          <View style={styles.textbox}>
+            <View style={styles.classnameview}>
+              <Text style={styles.classname}>{this.props.program.item.name}</Text>
             </View>
+            <View style={styles.classnameview}>
+              <Text style={styles.rolename}>{this.state.level}</Text>
+            </View>
+            <View style={styles.timebox}>
+              <Text style={{fontWeight: 'bold', fontSize: 16}}> Time Start:<Text style={{fontWeight: 'normal', fontSize: 14}}> {this.timeConverter(this.props.program.item.time_start)} </Text></Text>
+            </View>
+            <View style={styles.timebox}>
+              <Text style={{fontWeight: 'bold', fontSize: 16}}> Time End:<Text style={{fontWeight: 'normal', fontSize: 14}}> {this.timeConverter(this.props.program.item.time_end)} </Text> </Text>
+            </View>
+            <Text style={styles.description}>{this.props.program.item.description}</Text>
           </View>
+        </View>
         );
     }
     else{
