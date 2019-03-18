@@ -81,8 +81,11 @@ class LinksScreen extends React.Component {
     progs = JSON.parse(await AsyncStorage.getItem('teachers_classes'));
     now = (new Date()).getTime() / 1000;
     for(i in progs){
-      if(now > progs[i]['time_start'] - 1800000){
+      if(now > progs[i]['time_start'] - 1800){
+        console.log(now)
+        console.log(progs[i]['time_start'] - 1800)
         if((progs[i]['time_start'] > now) && progs[i]['checked_in'] != true){
+          console.log('test')
           AsyncStorage.setItem('checkInClassId', progs[i]['class_id'].toString());
         }
       }

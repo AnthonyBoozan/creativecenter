@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableWithoutFeedback, Button, Picker, Async
 var equal = require('fast-deep-equal');
 const axios = require('axios');
 import sty from "../constants/Button.js";
+import { WebBrowser, Notifications } from 'expo';
 
 
 class DetailedProgramMyPrograms extends Component {
@@ -20,15 +21,18 @@ class DetailedProgramMyPrograms extends Component {
   buttonPressAction = async () => {
     username = await AsyncStorage.getItem('username');
     token = await AsyncStorage.getItem('token');
+    notification_key = 'notification_at_'+this.state.program['time_start'].toString();
+    notification_id = await AsyncStorage.getItem(notification_key)
     levels = JSON.parse(await AsyncStorage.getItem('levels'));
     class_id = this.state.program.class_id;
-
     axios.post('http://ec2-54-218-225-131.us-west-2.compute.amazonaws.com:3000/api/dropclass', {
       username: username,
       password: token,
       class_id: class_id,
     }).then(response => {
       if(response.status == 200){
+        Notifications.cancelScheduledNotificationAsync(parseInt(notification_id))
+        AsyncStorage.removeItem(notification_key);
         this.props.handler();
       }
 
@@ -165,6 +169,7 @@ class DetailedProgramMyPrograms extends Component {
       if(response.status == 200){
         this.setState({showCheckIn: false});
         AsyncStorage.setItem('checkInClassId', '0');
+        
       }
     }).catch(function (error) {
       console.log(error);
@@ -177,11 +182,23 @@ class DetailedProgramMyPrograms extends Component {
     }
     else if(this.state.showCheckIn){
       return(
-          <View style={{position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, justifyContent: 'center', alignItems: 'center'}} pointerEvents='box-none'>
-            <View style={styles.textbox}>
-              <Text>{this.props.program.item.name}</Text>
-              <Text>{this.props.program.item.description}</Text>
-              <TouchableOpacity onPress={this.checkIn}>
+        <View style={{position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, justifyContent: 'center', alignItems: 'center'}} pointerEvents='box-none'>
+          <View style={styles.textbox}>
+            <View style={styles.classnameview}>
+              <Text style={styles.classname}>{this.props.program.item.name}</Text>
+            </View>
+            <View style={styles.classnameview}>
+              <Text style={styles.rolename}>{this.state.level}</Text>
+            </View>
+            <View style={styles.timebox}>
+              <Text style={{fontWeight: 'bold', fontSize: 16}}> Time Start:<Text style={{fontWeight: 'normal', fontSize: 14}}> {this.timeConverter(this.props.program.item.time_start)} </Text></Text>
+            </View>
+            <View style={styles.timebox}>
+              <Text style={{fontWeight: 'bold', fontSize: 16}}> Time End:<Text style={{fontWeight: 'normal', fontSize: 14}}> {this.timeConverter(this.props.program.item.time_end)} </Text> </Text>
+            </View>
+
+            <Text style={styles.description}>{this.props.program.item.description}</Text>
+            <TouchableOpacity onPress={this.checkIn}>
                 <Animated.View style={{
                   backgroundColor: "lightblue",
                   padding: 12,
@@ -196,8 +213,8 @@ class DetailedProgramMyPrograms extends Component {
                   <Text>Check in!</Text>
                 </Animated.View>
               </TouchableOpacity>
-            </View>
           </View>
+        </View>
         );
     }
     else if((this.props.program.item.time_start - 1800) < (new Date()).getTime() / 1000){

@@ -79,12 +79,13 @@ class DetailedProgram extends Component {
     return time;
   }
 
-  setNotification(){
+  async setNotification(){
     var dateObj = new Date((this.state.program['time_start'] * 1000) - 1800000);
     localNotification = {title: 'Time for a check in!', body: 'You have a class in 30 minutes! Please check in.'};
     schedulingOptions = {time: dateObj};
-
-    Notifications.scheduleLocalNotificationAsync(localNotification, schedulingOptions)
+    id = await Notifications.scheduleLocalNotificationAsync(localNotification, schedulingOptions)
+    notification_key = 'notification_at_'+this.state.program['time_start'].toString();
+    AsyncStorage.setItem(notification_key, id.toString());
   }
 
   async checkClassTimeslot(){
@@ -196,9 +197,9 @@ class DetailedProgram extends Component {
               <View style={styles.timebox}>
                 <Text style={{fontWeight: 'bold', fontSize: 16}}> Time End:<Text style={{fontWeight: 'normal', fontSize: 14}}> {this.timeConverter(this.props.program.item.time_end)} </Text> </Text>
               </View>
-
-              <Text style={styles.description}>{this.props.program.item.description}</Text>
-
+              <View style={styles.description}>
+                <Text>{this.props.program.item.description}</Text>
+              </View>
               {this.renderSignupOptions()}
             </View>
           </View>
@@ -230,9 +231,9 @@ const styles = StyleSheet.create({
   },
   description: {
     marginTop: 5,
-    left: 5,
+    padding: 5,
     borderRadius: 1,
-    borderColor: 'black'
+    borderColor: 'black',
   },
   button: {
     backgroundColor: "red",
